@@ -14,7 +14,7 @@ SG_window_size = 101;
 offset = 0.2;
 remove_offset = true;
 number_of_steps = 10000;
-fwhm_pulse_duration = 50e-15; % Time in seconds
+fwhm_pulse_duration = 20e-15; % Time in seconds
 carrier_wavelength = 810e-9; % Wavelength in meters
 carrier_frequency = speed_of_light_vacuum / carrier_wavelength;
 carrier_angular_frequency = 2 * pi * carrier_frequency;
@@ -43,13 +43,13 @@ frequency_vector((frequency_vector < cutoff_angular_frequency(1)) | (frequency_v
 fprintf('Generated pulse length = %e [fs]\n', 2 * pi * (2 * log(2) / pi) / fwhm(frequency_vector, ideal_spectrum) * 1e15);
 wavelength_vector = (2 * pi * speed_of_light_vacuum ./ frequency_vector); 
 ideal_spectrum_vector_in_wavelength = wrev(ideal_spectrum .* (2 * pi * speed_of_light_vacuum) ./ wavelength_vector.^2);
-ideal_spectrum_vector_in_wavelength = ideal_spectrum_vector_in_wavelength / max(ideal_spectrum_vector_in_wavelength);
+ideal_spectrum_vector_in_wavelength = ideal_spectrum_vector_in_wavelength / max(ideal_spectrum_vector_in_wavelength) + offset;
 wavelength_vector = wrev(wavelength_vector);
 
 fprintf('Start calculations for SNR = %i dB.\n', snr);
 
 % Corrupt spectrum
-corrupted_spectrum = awgn(ideal_spectrum_vector_in_wavelength, snr, 'measured') + offset;
+corrupted_spectrum = awgn(ideal_spectrum_vector_in_wavelength, snr, 'measured');
 
 % Process data
 [processed_spectrum, intensity_time, ...
